@@ -27,17 +27,11 @@ Install required packages via Pacman:
 # Install build dependencies
 pacman -Sy mingw-w64-x86_64-gcc make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-waf
 
-# Install Qt 6
+# Install Qt6 (shared version)
 pacman -S mingw-w64-x86_64-qt6-base
 ```
 
-> **Note:** You can use Qt5 instead. Simply run:
->
-> ```bash
-> pacman -S mingw-w64-x86_64-qt5
-> ```
-> 
-> But notice that **Qt5 support will be deprecated! Use Qt6 instead.**
+> **Note:** Qt5 support has been deprecated! Use Qt6 instead.
 
 ## Install LV2 SDK
 
@@ -89,15 +83,15 @@ cd ~/msys2-qt6base-static/
 makepkg -f
 ```
 
-When done, you'll get a package file: ```mingw-w64-x86_64-qtbase6-static-6.1.0-x86_64.pkg.tar.zst```.
+When done, you'll get a package file: ```mingw-w64-x86_64-qtbase6-static-6.1.2-x86_64.pkg.tar.zst```.
 
 3. Install package.
 
 ```bash
-pacman -U mingw-w64-x86_64-qtbase6-static-6.1.0-x86_64.pkg.tar.zst
+pacman -U mingw-w64-x86_64-qtbase6-static-6.1.2-x86_64.pkg.tar.zst
 ```
 
-Finally, Qt6 base static library will be installed into `/opt/qtbase6-static`.
+Finally, Qt6 base static library will be installed into `/opt/qt6.1-static/`.
 
 ## Build SynthV1 - Statically linking (Recommended)
 
@@ -110,7 +104,7 @@ Assume that you've already unpacked source code into `/c/Sources/synthv1` (aka. 
 2. Configure Qt6 static environment. Including this script will configure some necessary environment variables to let CMake choose static version of Qt6 library.
 
 ```bash
-source /opt/qtbase6-static/6.1.0/bin/qtbase6-static-env.sh
+source /opt/qt6.1-static/bin/qt6.1-static-env.sh
 ```
 
 3. CMake configure:
@@ -142,7 +136,7 @@ Assume that you've already unpacked source code into `C:\Sources\synthv1`.
 
 2. Click "Configure", then choose **"MSYS Makefiles"** as generator, and select "Use default native compilers". Click "Finish".
 
-3. You may encount an error soon, because Qt 6 is not enabled by default. 
+3. You may encount an error soon, because in old Vee-One versions, Qt6 is not enabled by default. 
 
     Simply check `CONFIG_QT6` in the parameter list shown in CMake GUI, then click "Configure" again.
 
