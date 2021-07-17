@@ -2,7 +2,7 @@
 @prefix lv2ui:   <http://lv2plug.in/ns/extensions/ui#> .
 
 <http://synthv1.sourceforge.net/lv2#ui>
-	a lv2ui:Qt5UI ;
+	a lv2ui:Qt6UI ;
 	lv2:requiredFeature <http://lv2plug.in/ns/ext/instance-access> ;
 	lv2ui:binary <synthv1.@LIB_EXT@> .
 
