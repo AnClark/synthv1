@@ -113,6 +113,17 @@ set (SOURCES_JACK
 )
 
 
+set (HEADERS_VST
+  synthv1_vst.h
+  synthv1_vstui.h
+)
+
+set (SOURCES_VST
+  synthv1_vst.cpp
+  synthv1_vstui.cpp
+)
+
+
 add_library (${PROJECT_NAME} STATIC
   ${HEADERS}
   ${SOURCES}
@@ -136,6 +147,13 @@ if (CONFIG_JACK)
   add_executable (${PROJECT_NAME}_jack
     ${HEADERS_JACK}
     ${SOURCES_JACK}
+  )
+endif ()
+
+if (CONFIG_VST)
+  add_library (${PROJECT_NAME}_vst MODULE
+    ${HEADERS_VST}
+    ${SOURCES_VST}
   )
 endif ()
 
@@ -239,5 +257,34 @@ if (CONFIG_JACK)
       DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/mimetypes)
     install (FILES mimetypes/application-x-${PROJECT_NAME}-preset.svg
       DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/mimetypes)
+  endif ()
+endif ()
+
+if (CONFIG_VST)
+  set_target_properties (${PROJECT_NAME}_vst PROPERTIES CXX_STANDARD 17)
+  target_link_libraries (${PROJECT_NAME}_vst PRIVATE ${PROJECT_NAME}_ui)
+  target_include_directories (${PROJECT_NAME}_vst PRIVATE ${CMAKE_SOURCE_DIR}/src/vst)
+
+  if (NOT WIN32)
+    target_link_options (${PROJECT_NAME}_vst PUBLIC "-exported-symbols-regex \"VSTPluginMain|main\"")
+  endif ()
+
+  if (UNIX AND NOT APPLE)
+    if (NOT CONFIG_DEBUG)
+      add_custom_command(TARGET ${PROJECT_NAME}_vst  POST_BUILD
+        COMMAND strip lib${PROJECT_NAME}_vst.so)
+    endif ()
+    install (FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}_vst.so
+      RENAME ${PROJECT_NAME}.so
+      DESTINATION ${CONFIG_VST_PATH})
+  elseif (WIN32)
+    target_link_options (${PROJECT_NAME}_vst PRIVATE -static-libgcc -static-libstdc++)
+    if (NOT CONFIG_DEBUG)
+      add_custom_command(TARGET ${PROJECT_NAME}_vst  POST_BUILD
+        COMMAND strip lib${PROJECT_NAME}_vst.dll)
+    endif ()
+    install (FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}_vst.dll
+      RENAME ${PROJECT_NAME}.dll
+      DESTINATION ${CONFIG_VST_PATH})
   endif ()
 endif ()

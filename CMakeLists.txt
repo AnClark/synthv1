@@ -99,6 +99,18 @@ option (CONFIG_LV2_PATCH "Enable LV2 plug-in Patch support (default=yes)" 1)
 
 option (CONFIG_LV2_PORT_EVENT "Enable LV2 plug-in Port-event support (EXPERIMENTAL) (default=yes)" 1)
 
+# Enable VST plugin build. (EXPERIMENTAL)
+option (CONFIG_VST "Enable VST plugin build (EARLY ALPHA!) (default=yes)" 1)
+
+# Specify VST plugin target
+if (WIN32)
+  set (DEFAULT_VST_PATH "C:\\Program Files\\Steinberg\\VSTPlugins")
+elseif (UNIX AND NOT APPLE)
+  set (DEFAULT_VST_PATH "~/.vst/")
+else ()   # Fallback
+  set (DEFAULT_VST_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+endif ()
+set (CONFIG_VST_PATH ${DEFAULT_VST_PATH} CACHE STRING "Specify VST plugin install path")
 
 # Enable liblo availability.
 option (CONFIG_LIBLO "Enable liblo interface (default=yes)" 1)
@@ -330,6 +342,7 @@ show_option ("  LV2 plug-in UI Resize interface support  . . . . ." CONFIG_LV2_U
 show_option ("  LV2 plug-in Programs support . . . . . . . . . . ." CONFIG_LV2_PROGRAMS)
 show_option ("  LV2 plug-in Patch support  . . . . . . . . . . . ." CONFIG_LV2_PATCH)
 show_option ("  LV2 plug-in Port-event support (EXPERIMENTAL)  . ." CONFIG_LV2_PORT_EVENT)
+show_option ("  VST plug-in support (EARLY ALPHA)  . . . . . . . ." CONFIG_VST)
 show_option ("  OSC service support (liblo)  . . . . . . . . . . ." CONFIG_LIBLO)
 show_option ("  Non Session Management (NSM) support . . . . . . ." CONFIG_NSM)
 message   ("\n  Install prefix . . . . . . . . . . . . . . . . . .: ${CONFIG_PREFIX}")
