@@ -185,6 +185,40 @@ const char *ParamNames[] = {
 // synthv1_vst - impl.
 //
 
+void synthv1_vst::process(int nframes, const std::vector<synthv1_midi_event_t> &midi_in, float **inputs, float **outputs)
+{
+    const uint16_t nchannels = synthv1::channels();
+
+    const size_t nevents = midi_in.size();
+    if (!nevents)
+        return;
+
+    std::vector<synthv1_midi_event_t>::const_iterator event;
+    uint32_t ndelta = 0;
+
+    for (event = midi_in.begin(); event != midi_in.end(); ++event)
+    {
+        if (event->offset_frames > ndelta)
+        {
+            const uint32_t nread = event->offset_frames - ndelta;
+            if (nread > 0)
+            {
+                synthv1::process(inputs, outputs, nread);
+                for (uint16_t k = 0; k < nchannels; ++k)
+                {
+                    inputs[k] += nread;
+                    outputs[k] += nread;
+                }
+            }
+            ndelta = event->offset_frames;
+        }
+        synthv1::process_midi(event->buffer, event->length);
+    }
+
+    if (nframes > ndelta)
+		synthv1::process(inputs, outputs, nframes - ndelta);
+}
+
 int synthv1_vst::loadState(const char *buffer)
 {
     size_t size = 0;
@@ -216,7 +250,7 @@ int synthv1_vst::loadState(const char *buffer)
     return 0;
 }
 
-int synthv1_vst::saveState(char **buffer)
+int synthv1_vst::saveState(char *buffer)
 {
     // Use char** to store state
     QDomDocument doc(SYNTHV1_TITLE);
@@ -239,27 +273,22 @@ int synthv1_vst::saveState(char **buffer)
 
 void synthv1_vst::updatePreset(bool)
 {
-
 }
 
 void synthv1_vst::updateParam(synthv1::ParamIndex index)
 {
-
 }
 
 void synthv1_vst::updateParams()
 {
-
 }
 
 void synthv1_vst::updateTuning()
 {
-
 }
 
 void synthv1_vst::updateSampleRate(double)
 {
-
 }
 
 //-------------------------------------------------------------------------
@@ -273,7 +302,6 @@ synthv1_vst::synthv1_vst()
 
 synthv1_vst::~synthv1_vst()
 {
-
 }
 
 QApplication *synthv1_vst::g_qapp_instance = nullptr;
@@ -437,7 +465,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 #endif
 
     case effGetChunk:
-        plugin->synthesizer->saveState((char **)ptr);
+        plugin->synthesizer->saveState((char *)ptr);
         return 0;
 
     case effSetChunk:
@@ -446,14 +474,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 
     case effProcessEvents:
     {
-#if 0
         VstEvents *events = (VstEvents *)ptr;
-
-#if _WIN32 // Do not assert on Windows
-        plugin->midiEvents.empty();
-#else
-        assert(plugin->midiEvents.empty());
-#endif
 
         memset(plugin->midiBuffer, 0, 4096);
         unsigned char *buffer = plugin->midiBuffer;
@@ -488,7 +509,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 
             memcpy(buffer, event->midiData, msgLength);
 
-            amsynth_midi_event_t midi_event;
+            synthv1_midi_event_t midi_event;
             memset(&midi_event, 0, sizeof(midi_event));
             midi_event.offset_frames = event->deltaFrames;
             midi_event.buffer = buffer;
@@ -499,7 +520,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 
             assert(buffer < plugin->midiBuffer + 4096);
         }
-#endif
+
         return 1;
     }
 
@@ -560,22 +581,16 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 
 static void process(AEffect *effect, float **inputs, float **outputs, int numSampleFrames)
 {
-#if 0
     Plugin *plugin = (Plugin *)effect->ptr3;
-    std::vector<amsynth_midi_cc_t> midi_out;
-    plugin->synthesizer->process(numSampleFrames, plugin->midiEvents, midi_out, outputs[0], outputs[1]);
+    plugin->synthesizer->process(numSampleFrames, plugin->midiEvents, inputs, outputs);
     plugin->midiEvents.clear();
-#endif
 }
 
 static void processReplacing(AEffect *effect, float **inputs, float **outputs, int numSampleFrames)
 {
-#if 0
     Plugin *plugin = (Plugin *)effect->ptr3;
-    std::vector<amsynth_midi_cc_t> midi_out;
-    plugin->synthesizer->process(numSampleFrames, plugin->midiEvents, midi_out, outputs[0], outputs[1]);
+    plugin->synthesizer->process(numSampleFrames, plugin->midiEvents, inputs, outputs);
     plugin->midiEvents.clear();
-#endif
 }
 
 static void setParameter(AEffect *effect, int i, float f)
@@ -617,7 +632,7 @@ extern "C"
     effect->getParameter = getParameter;
     effect->numPrograms = getNumPrograms();
     effect->numParams = synthv1::ParamIndex::NUM_PARAMS;
-    effect->numInputs = 0;
+    effect->numInputs = 2;
     effect->numOutputs = 2;
     effect->flags = effFlagsCanReplacing | effFlagsIsSynth | effFlagsProgramChunks;
 #ifdef WITH_GUI

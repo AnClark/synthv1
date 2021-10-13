@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "vst/vestige.h"
+#include "vst/midi.h"
 
 #if _WIN32
 #include <windows.h>
@@ -38,40 +39,6 @@ const int WINDOW_HEIGHT = 540;
 const uint32_t DEFAULT_BUFFER_SIZE = 512;
 
 /**
- * SynthV1 VST synthesizer class
- */
-class synthv1_vst : public synthv1
-{
-public:
-    synthv1_vst();
-
-    ~synthv1_vst();
-
-    void run(uint32_t nframes);
-
-    static void qapp_instantiate();
-    static void qapp_cleanup();
-
-    static QApplication *qapp_instance();
-
-    int loadState(const char *buffer);
-    int saveState(char **buffer);
-
-protected:
-    void updatePreset(bool bDirty);
-    void updateParam(synthv1::ParamIndex index);
-    void updateParams();
-    void updateTuning();
-    void updateSampleRate(double sample_rate);
-
-private:
-    double sample_rate;
-
-    static QApplication *g_qapp_instance;
-    static unsigned int g_qapp_refcount;
-};
-
-/**
  * MIDI data struct
  * Ported from AmSynth
  */
@@ -87,6 +54,40 @@ struct synthv1_midi_cc_t
     unsigned char channel;
     unsigned char cc;
     unsigned char value;
+};
+
+/**
+ * SynthV1 VST synthesizer class
+ */
+class synthv1_vst : public synthv1
+{
+public:
+    synthv1_vst();
+
+    ~synthv1_vst();
+
+    void process(int numSampleFrames, const std::vector<synthv1_midi_event_t> &midi_in, float **inputs, float **outputs);
+
+    static void qapp_instantiate();
+    static void qapp_cleanup();
+
+    static QApplication *qapp_instance();
+
+    int loadState(const char *buffer);
+    int saveState(char *buffer);
+
+protected:
+    void updatePreset(bool bDirty);
+    void updateParam(synthv1::ParamIndex index);
+    void updateParams();
+    void updateTuning();
+    void updateSampleRate(double sample_rate);
+
+private:
+    double sample_rate;
+
+    static QApplication *g_qapp_instance;
+    static unsigned int g_qapp_refcount;
 };
 
 /**
