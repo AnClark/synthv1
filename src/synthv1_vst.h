@@ -86,6 +86,8 @@ protected:
 private:
     double sample_rate;
 
+    float m_params[synthv1::NUM_PARAMS];
+
     static QApplication *g_qapp_instance;
     static unsigned int g_qapp_refcount;
 };

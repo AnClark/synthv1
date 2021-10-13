@@ -216,7 +216,7 @@ void synthv1_vst::process(int nframes, const std::vector<synthv1_midi_event_t> &
     }
 
     if (nframes > ndelta)
-		synthv1::process(inputs, outputs, nframes - ndelta);
+        synthv1::process(inputs, outputs, nframes - ndelta);
 }
 
 int synthv1_vst::loadState(const char *buffer)
@@ -297,7 +297,16 @@ void synthv1_vst::updateSampleRate(double)
 
 synthv1_vst::synthv1_vst()
 {
+    // Init buffer size
     synthv1::setBufferSize(DEFAULT_BUFFER_SIZE);
+
+    // Init parameter ports
+    for (uint32_t i = 0; i < synthv1::NUM_PARAMS; ++i)
+    {
+        const synthv1::ParamIndex index = synthv1::ParamIndex(i);
+        m_params[i] = synthv1_param::paramDefaultValue(index);
+        synthv1::setParamPort(index, &m_params[i]);
+    }
 }
 
 synthv1_vst::~synthv1_vst()
@@ -406,8 +415,13 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
     }
 
     case effGetParamDisplay:
-        // TODO: "Display" means the value shown on host's generic UI
+    {
+        char param_display[32];
+        snprintf(param_display, 32, "%f", plugin->synthesizer->paramValue((synthv1::ParamIndex)index));
+        strncpy((char *)ptr, param_display, 32);
+
         return 0;
+    }
 
     case effGetParamName:
     {
@@ -602,6 +616,7 @@ static void setParameter(AEffect *effect, int i, float f)
 static float getParameter(AEffect *effect, int i)
 {
     Plugin *plugin = (Plugin *)effect->ptr3;
+
     return plugin->synthesizer->paramValue((synthv1::ParamIndex)i);
 }
 
