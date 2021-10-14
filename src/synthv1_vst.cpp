@@ -189,11 +189,8 @@ void synthv1_vst::process(int nframes, const std::vector<synthv1_midi_event_t> &
 {
     const uint16_t nchannels = synthv1::channels();
 
-    const size_t nevents = midi_in.size();
-    if (!nevents)
-        return;
-
     std::vector<synthv1_midi_event_t>::const_iterator event;
+
     uint32_t ndelta = 0;
 
     for (event = midi_in.begin(); event != midi_in.end(); ++event)
