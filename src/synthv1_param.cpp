@@ -264,6 +264,21 @@ float synthv1_param::paramScale ( synthv1::ParamIndex index, float fValue )
 		return fScale;
 }
 
+
+float synthv1_param::paramScaleVST ( synthv1::ParamIndex index, float fValue )
+{
+	const ParamInfo& param = synthv1_params[index];
+
+	if (param.type == PARAM_BOOL)
+		return (fValue > 0.5f ? 1.0f : 0.0f);
+
+	const float fScale = (fValue - param.min) / (param.max - param.min);
+
+	// Directly return fScale to avoid wrong slider position in host's generic UI
+	return fScale;
+}
+
+
 std::string synthv1_param::paramDisplay ( synthv1::ParamIndex index, float fValue )
 {
 	const ParamInfo& param = synthv1_params[index];

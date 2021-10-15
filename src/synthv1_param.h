@@ -60,8 +60,9 @@ namespace synthv1_param
 	float paramScale(synthv1::ParamIndex index, float fValue);
 	bool paramFloat(synthv1::ParamIndex index);
 
-	// VST helpers: show parameter value in user-friendly formats.
-	std::string paramDisplay(synthv1::ParamIndex index, float fValue);
+	// VST helpers.
+	float paramScaleVST(synthv1::ParamIndex index, float fValue);		// VST version of paramScale().
+	std::string paramDisplay(synthv1::ParamIndex index, float fValue);	// Show parameter value in user-friendly formats.
 
 	// Load/save and convert canonical/absolute filename helpers.
 	QString loadFilename(const QString& sFilename);

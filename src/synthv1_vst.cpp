@@ -276,7 +276,9 @@ int synthv1_vst::saveState(char *buffer)
  * 
  * Related SynthV1 parameter convertion methods:
  * - synthv1_param::paramValue():   Convert VST scaled value to real value
- * - synthv1_param::paramScale():   Rescale real value to VST value
+ * - synthv1_param::paramScale()
+ * - synthv1_param::paramScaleVST():
+ *                                  Rescale real value to VST value
  * - synthv1_param::paramDisplay(): Get user-friendly display value
  *                                  (to display on host's generic UI)
  */
@@ -290,7 +292,7 @@ void synthv1_vst::setNormalizedParamValue(ParamIndex index, float fScale)
 float synthv1_vst::getNormalizedParamValue(ParamIndex index)
 {
     float fValue = this->paramValue(index);
-    return synthv1_param::paramScale(index, fValue);
+    return synthv1_param::paramScaleVST(index, fValue);
 }
 
 void synthv1_vst::getParamDisplay(ParamIndex index, char *buffer, size_t maxLen)
