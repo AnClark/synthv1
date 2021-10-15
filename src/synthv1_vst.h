@@ -73,6 +73,10 @@ public:
 
     static QApplication *qapp_instance();
 
+    void setNormalizedParamValue(ParamIndex index, float fScale);
+    float getNormalizedParamValue(ParamIndex index);
+    void getParamDisplay(ParamIndex index, char *buffer, size_t maxLen);
+
     int loadState(const char *buffer);
     int saveState(char *buffer);
 

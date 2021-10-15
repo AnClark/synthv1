@@ -29,6 +29,7 @@
 #include <QDir>
 
 #include <cmath>
+#include <sstream>
 
 
 //-------------------------------------------------------------------------
@@ -263,6 +264,34 @@ float synthv1_param::paramScale ( synthv1::ParamIndex index, float fValue )
 		return fScale;
 }
 
+std::string synthv1_param::paramDisplay ( synthv1::ParamIndex index, float fValue )
+{
+	const ParamInfo& param = synthv1_params[index];
+	std::ostringstream strbuffer;
+
+	switch (param.type)
+	{
+		case PARAM_BOOL:
+			strbuffer << (fValue > 0.5f ? "True" : "False");
+			break;
+
+		case PARAM_INT:
+			strbuffer << std::round(fValue);
+			break;
+		
+		case PARAM_FLOAT:
+		default:
+		{
+			if ((param.min == 0.0f || param.min == -1.0f) && param.max == 1.0f)
+				strbuffer << (fValue * 100);
+			else
+				strbuffer << fValue;
+		}
+			
+	}
+
+	return strbuffer.str();
+}
 
 bool synthv1_param::paramFloat ( synthv1::ParamIndex index )
 {

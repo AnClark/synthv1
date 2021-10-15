@@ -25,6 +25,7 @@
 #include "synthv1.h"
 
 #include <QString>
+#include <string>
 
 // forward decl.
 class QDomElement;
@@ -58,6 +59,9 @@ namespace synthv1_param
 	float paramValue(synthv1::ParamIndex index, float fScale);
 	float paramScale(synthv1::ParamIndex index, float fValue);
 	bool paramFloat(synthv1::ParamIndex index);
+
+	// VST helpers: show parameter value in user-friendly formats.
+	std::string paramDisplay(synthv1::ParamIndex index, float fValue);
 
 	// Load/save and convert canonical/absolute filename helpers.
 	QString loadFilename(const QString& sFilename);

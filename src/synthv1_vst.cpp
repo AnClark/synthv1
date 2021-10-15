@@ -268,6 +268,37 @@ int synthv1_vst::saveState(char *buffer)
     return 0;
 }
 
+/**
+ * NOTICE: About parameter helpers
+ * 
+ * VST plugins only support parameters ranging from 0.0f to 1.0f.
+ * So actual parameter values beyond this range must be rescaled.
+ * 
+ * Related SynthV1 parameter convertion methods:
+ * - synthv1_param::paramValue():   Convert VST scaled value to real value
+ * - synthv1_param::paramScale():   Rescale real value to VST value
+ * - synthv1_param::paramDisplay(): Get user-friendly display value
+ *                                  (to display on host's generic UI)
+ */
+
+void synthv1_vst::setNormalizedParamValue(ParamIndex index, float fScale)
+{
+    float fValue = synthv1_param::paramValue(index, fScale);
+    this->setParamValue(index, fValue);
+}
+
+float synthv1_vst::getNormalizedParamValue(ParamIndex index)
+{
+    float fValue = this->paramValue(index);
+    return synthv1_param::paramScale(index, fValue);
+}
+
+void synthv1_vst::getParamDisplay(ParamIndex index, char *buffer, size_t maxLen)
+{
+    float fValue = this->paramValue(index);
+    strncpy(buffer, synthv1_param::paramDisplay(index, fValue).c_str(), maxLen);
+}
+
 void synthv1_vst::updatePreset(bool)
 {
 }
@@ -413,10 +444,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 
     case effGetParamDisplay:
     {
-        char param_display[32];
-        snprintf(param_display, 32, "%f", plugin->synthesizer->paramValue((synthv1::ParamIndex)index));
-        strncpy((char *)ptr, param_display, 32);
-
+        plugin->synthesizer->getParamDisplay((synthv1::ParamIndex)index, (char *)ptr, 32);
         return 0;
     }
 
@@ -607,14 +635,13 @@ static void processReplacing(AEffect *effect, float **inputs, float **outputs, i
 static void setParameter(AEffect *effect, int i, float f)
 {
     Plugin *plugin = (Plugin *)effect->ptr3;
-    plugin->synthesizer->setParamValue((synthv1::ParamIndex)i, f);
+    plugin->synthesizer->setNormalizedParamValue((synthv1::ParamIndex)i, f);
 }
 
 static float getParameter(AEffect *effect, int i)
 {
     Plugin *plugin = (Plugin *)effect->ptr3;
-
-    return plugin->synthesizer->paramValue((synthv1::ParamIndex)i);
+    return plugin->synthesizer->getNormalizedParamValue((synthv1::ParamIndex)i);
 }
 
 // TODO: Currently unimplemented
