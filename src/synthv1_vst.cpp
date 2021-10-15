@@ -332,8 +332,8 @@ synthv1_vst::synthv1_vst()
     for (uint32_t i = 0; i < synthv1::NUM_PARAMS; ++i)
     {
         const synthv1::ParamIndex index = synthv1::ParamIndex(i);
-        m_params[i] = synthv1_param::paramDefaultValue(index);
         synthv1::setParamPort(index, &m_params[i]);
+        this->setParamValue(index, synthv1_param::paramDefaultValue(index));
     }
 }
 
