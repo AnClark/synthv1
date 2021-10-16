@@ -218,54 +218,112 @@ void synthv1_vst::process(int nframes, const std::vector<synthv1_midi_event_t> &
 
 int synthv1_vst::loadState(const char *buffer)
 {
-    size_t size = 0;
-    uint32_t type = 0;
+    const bool running = this->running(false);
+
+    this->setTuningEnabled(false);
+    this->reset();
+
+    static QHash<QString, synthv1::ParamIndex> s_hash;
+    if (s_hash.isEmpty())
+    {
+        for (uint32_t i = 0; i < synthv1::NUM_PARAMS; ++i)
+        {
+            const synthv1::ParamIndex index = synthv1::ParamIndex(i);
+            s_hash.insert(synthv1_param::paramName(index), index);
+        }
+    }
 
     QDomDocument doc(SYNTHV1_TITLE);
-    if (doc.setContent(QByteArray(buffer, sizeof(buffer))))
+    if (doc.setContent(QByteArray(buffer)))
     {
-        QDomElement eState = doc.documentElement();
-        if (eState.tagName() == "state")
+        QDomElement ePreset = doc.documentElement();
+        if (ePreset.tagName() == "preset")
         {
-            for (QDomNode nChild = eState.firstChild();
+            for (QDomNode nChild = ePreset.firstChild();
                  !nChild.isNull();
                  nChild = nChild.nextSibling())
             {
                 QDomElement eChild = nChild.toElement();
                 if (eChild.isNull())
                     continue;
-                if (eChild.tagName() == "tuning")
+                if (eChild.tagName() == "params")
+                {
+                    for (QDomNode nParam = eChild.firstChild();
+                         !nParam.isNull();
+                         nParam = nParam.nextSibling())
+                    {
+                        QDomElement eParam = nParam.toElement();
+                        if (eParam.isNull())
+                            continue;
+                        if (eParam.tagName() == "param")
+                        {
+                            synthv1::ParamIndex index = synthv1::ParamIndex(
+                                eParam.attribute("index").toULong());
+                            const QString &sName = eParam.attribute("name");
+                            if (!sName.isEmpty())
+                            {
+                                if (!s_hash.contains(sName))
+                                    continue;
+                                index = s_hash.value(sName);
+                            }
+                            const float fValue = eParam.text().toFloat();
+                            this->setParamValue(index,
+                                                synthv1_param::paramSafeValue(index, fValue));
+                        }
+                    }
+                }
+                else if (eChild.tagName() == "tuning")
+                {
                     synthv1_param::loadTuning(this, eChild);
+                }
             }
         }
     }
 
+    this->stabilize();
     this->reset();
-
-    synthv1_sched::sync_notify(this, synthv1_sched::Wave, 1);
+    this->running(running);
 
     return 0;
 }
 
-int synthv1_vst::saveState(char *buffer)
+int synthv1_vst::saveState(char **buffer)
 {
-    // Use char** to store state
+    this->stabilize();
+
     QDomDocument doc(SYNTHV1_TITLE);
-    QDomElement eState = doc.createElement("state");
+    QDomElement ePreset = doc.createElement("preset");
+    ePreset.setAttribute("name", "VST_STATE");
+    ePreset.setAttribute("version", CONFIG_BUILD_VERSION);
 
-    QDomElement eTuning = doc.createElement("tuning");
-    synthv1_param::saveTuning(this, doc, eTuning);
-    eState.appendChild(eTuning);
+    QDomElement eParams = doc.createElement("params");
+    for (uint32_t i = 0; i < synthv1::NUM_PARAMS; ++i)
+    {
+        QDomElement eParam = doc.createElement("param");
+        const synthv1::ParamIndex index = synthv1::ParamIndex(i);
+        eParam.setAttribute("index", QString::number(i));
+        eParam.setAttribute("name", synthv1_param::paramName(index));
+        const float fValue = this->paramValue(index);
+        eParam.appendChild(doc.createTextNode(QString::number(fValue)));
+        eParams.appendChild(eParam);
+    }
+    ePreset.appendChild(eParams);
 
-    doc.appendChild(eState);
+    if (this->isTuningEnabled())
+    {
+        QDomElement eTuning = doc.createElement("tuning");
+        synthv1_param::saveTuning(this, doc, eTuning);
+        ePreset.appendChild(eTuning);
+    }
+
+    doc.appendChild(ePreset);
 
     const QByteArray data(doc.toByteArray());
     const char *value = data.constData();
     size_t size = data.size();
 
-    memcpy((char *)buffer, data, size);
-
-    return 0;
+    *buffer = (char *)malloc(size);
+    return sprintf(*buffer, "%s", value);
 }
 
 /**
@@ -506,8 +564,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 #endif
 
     case effGetChunk:
-        plugin->synthesizer->saveState((char *)ptr);
-        return 0;
+        return plugin->synthesizer->saveState((char **)ptr);
 
     case effSetChunk:
         plugin->synthesizer->loadState((const char *)ptr);

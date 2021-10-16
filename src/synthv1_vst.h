@@ -78,7 +78,7 @@ public:
     void getParamDisplay(ParamIndex index, char *buffer, size_t maxLen);
 
     int loadState(const char *buffer);
-    int saveState(char *buffer);
+    int saveState(char **buffer);
 
 protected:
     void updatePreset(bool bDirty);
