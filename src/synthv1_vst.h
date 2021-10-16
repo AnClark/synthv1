@@ -6,7 +6,7 @@
 #include "synthv1_sched.h"
 #include "synthv1_config.h"
 
-#include "synthv1_vstui.h"
+#include "synthv1_vsteditor.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -32,8 +32,8 @@ class QApplication;
  */
 
 // Default UI size
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 540;
+const int WINDOW_WIDTH = 1380;
+const int WINDOW_HEIGHT = 650;
 
 // Default buffer size
 const uint32_t DEFAULT_BUFFER_SIZE = 512;
@@ -130,9 +130,11 @@ struct Plugin
     }
 
     audioMasterCallback audioMaster;
-    synthv1_vst *synthesizer;
+    synthv1_vst *synthesizer = nullptr;
     unsigned char *midiBuffer;
     std::vector<synthv1_midi_event_t> midiEvents;
+
+    synthv1_vst_editor *editor = nullptr; // NOTICE: By default *editor is not null. Must set to nullptr explicitly.
 
     int programNumber = 0;
 };

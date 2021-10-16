@@ -524,7 +524,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
     case effMainsChanged:
         return 0;
 
-#if 0
+#if 1
     case effEditGetRect:
     {
         static ERect rect = {0, 0, WINDOW_HEIGHT, WINDOW_WIDTH};
@@ -534,31 +534,30 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
     }
     case effEditOpen:
     {
-        if (!plugin->editorInstance)
+        if (!plugin->editor)
         {
-            plugin->editorInstance = new ImguiEditor(ptr, WINDOW_WIDTH, WINDOW_HEIGHT, plugin->synthesizer);
-            plugin->editorInstance->setParamChangeCallback(on_adjustment_value_changed, effect);
-            plugin->editorInstance->openEditor();
+            plugin->editor = new synthv1_vst_editor(plugin->synthesizer, ptr);
+            plugin->editor->updateUIParamValues();
         }
+
         return 1;
     }
     case effEditClose:
     {
-        if (plugin->editorInstance)
+        if (plugin->editor)
         {
-            plugin->editorInstance->closeEditor();
-            delete plugin->editorInstance;
-            plugin->editorInstance = nullptr;
+            delete plugin->editor;
+            plugin->editor = nullptr; // "delete" won't reset the pointer.
+                                      // So must explicitly set to empty to avoid crash
         }
+
         return 0;
     }
     case effEditIdle:
     {
-        // Draw UI on every idle piece
-        if (plugin->editorInstance)
-        {
-            plugin->editorInstance->drawFrame();
-        }
+        if (plugin->editor)
+            plugin->editor->idle();
+
         return 1;
     }
 #endif
@@ -695,6 +694,9 @@ static void setParameter(AEffect *effect, int i, float f)
 {
     Plugin *plugin = (Plugin *)effect->ptr3;
     plugin->synthesizer->setNormalizedParamValue((synthv1::ParamIndex)i, f);
+
+    if (plugin->editor)
+        plugin->editor->updateUIParamValues();
 }
 
 static float getParameter(AEffect *effect, int i)
@@ -733,7 +735,7 @@ extern "C"
     effect->numInputs = 2;
     effect->numOutputs = 2;
     effect->flags = effFlagsCanReplacing | effFlagsIsSynth | effFlagsProgramChunks;
-#ifdef WITH_GUI
+#if 1
     effect->flags |= effFlagsHasEditor; // On Windows, amsynth's GTK GUI works in REAPER! (^.^)
 #endif                                  // WITH_GUI
     // Do no use the ->user pointer because ardour clobbers it

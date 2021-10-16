@@ -115,12 +115,14 @@ set (SOURCES_JACK
 
 set (HEADERS_VST
   synthv1_vst.h
-  synthv1_vstui.h
+  synthv1widget_vst.h
+  synthv1_vsteditor.h
 )
 
 set (SOURCES_VST
   synthv1_vst.cpp
-  synthv1_vstui.cpp
+  synthv1widget_vst.cpp
+  synthv1_vsteditor.cpp
 )
 
 
