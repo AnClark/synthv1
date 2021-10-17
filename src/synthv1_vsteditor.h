@@ -24,6 +24,8 @@
 
 #include <QWindow>
 
+#include "vst/vestige.h"
+
 // Polyfill for windows size (minimal suitable size)
 // Qt cannot determine the right window size on Windows.
 #define UI_WINDOWS_RECOMMENDED_WIDTH 1380
@@ -41,7 +43,7 @@ class synthv1_vst_editor
 {
 public:
     // Constructor.
-    synthv1_vst_editor(synthv1_vst *pSynth, void *pParent);
+    synthv1_vst_editor(synthv1_vst *pSynth, void *pParent, AEffect *pEffect);
 
     // Destructor.
     ~synthv1_vst_editor();
@@ -75,6 +77,8 @@ private:
     synthv1widget_vst *m_pWidget = nullptr;
     WId m_pWinId;
     WId m_pParent;
+
+    AEffect *m_pEffect;
 
     // Instance variables.
     //LV2UI_Controller     m_controller;

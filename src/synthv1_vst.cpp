@@ -536,7 +536,7 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
     {
         if (!plugin->editor)
         {
-            plugin->editor = new synthv1_vst_editor(plugin->synthesizer, ptr);
+            plugin->editor = new synthv1_vst_editor(plugin->synthesizer, ptr, effect);
             plugin->editor->updateUIParamValues();
         }
 

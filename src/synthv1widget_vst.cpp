@@ -52,7 +52,7 @@
 // synthv1widget_vst - impl.
 //
 
-synthv1widget_vst::synthv1widget_vst(synthv1_vst *pSynth)
+synthv1widget_vst::synthv1widget_vst(synthv1_vst *pSynth, AEffect *pEffect)
 	//LV2UI_Controller controller, LV2UI_Write_Function write_function )
 	: synthv1widget()
 {
@@ -85,7 +85,7 @@ synthv1widget_vst::synthv1widget_vst(synthv1_vst *pSynth)
 	m_bIdleClosed = false;
 
 	// Initialize (user) interface stuff...
-	m_pSynthUi = new synthv1_ui(pSynth, false);
+	m_pSynthUi = new synthv1_vstui(pSynth, pEffect);
 
 	// Initialise preset stuff...
 	clearPreset();
@@ -135,6 +135,7 @@ void synthv1widget_vst::setUIParamValue(synthv1::ParamIndex paramIndex, float va
 void synthv1widget_vst::updateParam(synthv1::ParamIndex index, float fValue) const
 {
 	m_pSynthUi->setParamValue(index, fValue);
+	m_pSynthUi->write_function(index, fValue);
 }
 
 // end of synthv1widget_vst.cpp

@@ -30,10 +30,11 @@
 // synthv1_vst_editor - impl.
 //
 
-synthv1_vst_editor::synthv1_vst_editor(synthv1_vst *pSynth, void *pParent)
+synthv1_vst_editor::synthv1_vst_editor(synthv1_vst *pSynth, void *pParent, AEffect *pEffect)
 {
     this->m_pSynth = pSynth;
     this->m_pParent = (WId)pParent;
+    this->m_pEffect = pEffect;
 
     this->instanciate();
 }
@@ -54,7 +55,7 @@ void synthv1_vst_editor::instanciate()
     if (!m_pParent)
         return;
 
-    this->m_pWidget = new synthv1widget_vst(this->m_pSynth);
+    this->m_pWidget = new synthv1widget_vst(this->m_pSynth, this->m_pEffect);
 
     this->m_pWinId = this->m_pWidget->winId();
     this->m_pWidget->windowHandle()->setParent(QWindow::fromWinId(this->m_pParent));

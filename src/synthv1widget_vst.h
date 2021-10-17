@@ -24,6 +24,7 @@
 #define __synthv1widget_vst_h
 
 #include "synthv1widget.h"
+#include "synthv1_vstui.h"
 
 // Forward decls.
 class synthv1_vst;
@@ -36,7 +37,7 @@ class synthv1widget_vst : public synthv1widget
 {
 public:
 	// Constructor.
-	synthv1widget_vst(synthv1_vst *pSynth);
+	synthv1widget_vst(synthv1_vst *pSynth, AEffect *pEffect);
 
 	// Destructor.
 	~synthv1widget_vst();
@@ -62,7 +63,8 @@ protected:
 
 private:
 	// Instance variables.
-	synthv1_ui *m_pSynthUi;
+	synthv1_vstui *m_pSynthUi;
+	AEffect *m_pEffect;
 
 	bool m_bIdleClosed;
 };
