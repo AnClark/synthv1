@@ -566,8 +566,14 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
         return plugin->synthesizer->saveState((char **)ptr);
 
     case effSetChunk:
+    {
         plugin->synthesizer->loadState((const char *)ptr);
+
+        if (plugin->editor)
+            plugin->editor->updateUIParamValues();
+
         return 0;
+    }
 
     case effProcessEvents:
     {
