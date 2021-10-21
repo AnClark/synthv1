@@ -521,6 +521,14 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
     }
 
     case effSetBlockSize:
+    {
+        int32_t hostBlockSize = (int32_t)val;
+        if (hostBlockSize > DEFAULT_BUFFER_SIZE)
+            plugin->synthesizer->setBufferSize(hostBlockSize);
+
+        return 0;
+    }
+
     case effMainsChanged:
         return 0;
 
