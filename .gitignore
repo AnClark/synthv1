@@ -19,3 +19,7 @@ qrc_*.cpp
 synthv1_ui.ttl
 synthv1_jack
 build/
+*.patch
+*.orig
+*.rej
+.vscode
