@@ -63,8 +63,6 @@ set (CONFIG_LIBDIR  "${CONFIG_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 set (CONFIG_DATADIR "${CONFIG_PREFIX}/${CMAKE_INSTALL_DATADIR}")
 set (CONFIG_MANDIR  "${CONFIG_PREFIX}/${CMAKE_INSTALL_MANDIR}")
 
-# Windows install target path.
-set (CONFIG_WINDOWS_LV2_PATH "$ENV{SYSTEMDRIVE}/Program Files/Common Files/LV2" CACHE STRING "Specify Windows LV2 install path")
 
 # Enable JACK standalone build.
 option (CONFIG_JACK "Enable JACK stand-alone build (default=yes)" 1)
@@ -81,9 +79,16 @@ option (CONFIG_ALSA_MIDI "Enable ALSA MIDI support (default=yes)" 1)
 # Enable LV2 plugin build.
 option (CONFIG_LV2 "Enable LV2 plug-in build (default=yes)" 1)
 
-option (CONFIG_LV2_UI_X11 "Enable LV2 plug-in X11 UI support (default=yes)" 1)
+# Enable LV2 UI support for Windows
+if (WIN32)
+  option (CONFIG_LV2_UI_WINDOWS "Enable LV2 plug-in Windows UI support (default=yes)" 1)
+  # Windows install target path.
+  set (CONFIG_WINDOWS_LV2_PATH "$ENV{SYSTEMDRIVE}/Program Files/Common Files/LV2" CACHE STRING "Specify Windows LV2 install path")
+endif ()
 
-option (CONFIG_LV2_UI_WINDOWS "Enable LV2 plug-in Windows UI support (default=yes)" 1)
+# Enable LV2 UI support for X11 (Linux)
+# NOTICE: Windows build also requires this option enabled!
+option (CONFIG_LV2_UI_X11 "Enable LV2 plug-in X11 UI support (default=yes)" 1)
 
 option (CONFIG_LV2_UI_EXTERNAL "Enable LV2 plug-in External UI support (default=yes)" 1)
 
@@ -157,7 +162,7 @@ endif ()
 
 
 # Find package modules
-find_package (PkgConfig REQUIRED)
+include (FindPkgConfig)
 
 # Check for JACK libraries.
 if (CONFIG_JACK)
@@ -321,8 +326,10 @@ show_option ("  JACK session support . . . . . . . . . . . . . . ." CONFIG_JACK_
 show_option ("  JACK MIDI support  . . . . . . . . . . . . . . . ." CONFIG_JACK_MIDI)
 show_option ("  ALSA MIDI support  . . . . . . . . . . . . . . . ." CONFIG_ALSA_MIDI)
 show_option ("  LV2 plug-in build  . . . . . . . . . . . . . . . ." CONFIG_LV2)
-show_option ("  LV2 plug-in X11 UI support   . . . . . . . . . . ." CONFIG_LV2_UI_X11)
+if (WIN32)
 show_option ("  LV2 plug-in Windows UI support   . . . . . . . . ." CONFIG_LV2_UI_WINDOWS)
+endif ()
+show_option ("  LV2 plug-in X11 UI support   . . . . . . . . . . ." CONFIG_LV2_UI_X11)
 show_option ("  LV2 plug-in External UI support  . . . . . . . . ." CONFIG_LV2_UI_EXTERNAL)
 show_option ("  LV2 plug-in UI Idle interface support  . . . . . ." CONFIG_LV2_UI_IDLE)
 show_option ("  LV2 plug-in UI Show interface support  . . . . . ." CONFIG_LV2_UI_SHOW)
@@ -334,3 +341,10 @@ show_option ("  OSC service support (liblo)  . . . . . . . . . . ." CONFIG_LIBLO
 show_option ("  Non Session Management (NSM) support . . . . . . ." CONFIG_NSM)
 message   ("\n  Install prefix . . . . . . . . . . . . . . . . . .: ${CONFIG_PREFIX}")
 message   ("\nNow type 'make', followed by 'make install' as root.\n")
+
+if (WIN32)
+  if (CONFIG_LV2_UI_WINDOWS AND NOT CONFIG_LV2_UI_X11)
+    message (WARNING "Windows build also requires X11 to be enabled, or LV2 UI won't work.")
+    message ("You'd better reconfigure synthv1 with CONFIG_LV2_UI_X11=ON.\n")
+  endif ()
+endif()
