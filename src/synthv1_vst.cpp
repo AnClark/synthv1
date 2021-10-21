@@ -703,6 +703,21 @@ static void process(AEffect *effect, float **inputs, float **outputs, int numSam
 static void processReplacing(AEffect *effect, float **inputs, float **outputs, int numSampleFrames)
 {
     Plugin *plugin = (Plugin *)effect->ptr3;
+
+#if 1
+    // Get BPM
+    // The following code is implemented from DPF
+    static const int kWantVstTimeFlags(kVstTransportPlaying | kVstPpqPosValid | kVstTempoValid | kVstTimeSigValid);
+    if (const VstTimeInfo *const vstTimeInfo = (const VstTimeInfo *)plugin->audioMaster(effect, audioMasterGetTime, 0, kWantVstTimeFlags, nullptr, 0.0f))
+    {
+        if (vstTimeInfo->flags & kVstTempoValid)
+            plugin->synthesizer->setTempo(vstTimeInfo->tempo);
+        else
+            plugin->synthesizer->setTempo(120.0f);
+    }
+#endif
+
+    // Start processing
     plugin->synthesizer->process(numSampleFrames, plugin->midiEvents, inputs, outputs);
     plugin->midiEvents.clear();
 }
