@@ -1515,6 +1515,9 @@ void synthv1widget::helpAbout (void)
 #ifndef CONFIG_LV2
 	list << tr("LV2 plug-in build disabled.");
 #endif
+#ifndef CONFIG_VST
+	list << tr("VST2 plug-in build disabled.");
+#endif
 
 	QString sText = "<p>\n";
 	sText += "<b>" SYNTHV1_TITLE "</b> - " + tr(SYNTHV1_SUBTITLE) + "<br />\n";

@@ -88,6 +88,9 @@
 /* Define if LV2 Port-event is supported. (EXPERIMENTAL) */
 #cmakedefine CONFIG_LV2_PORT_EVENT @CONFIG_LV2_PORT_EVENT@
 
+/* Define if VST plug-in build is enabled. */
+#cmakedefine CONFIG_VST @CONFIG_VST@
+
 /* Define if NSM support is available. */
 #cmakedefine CONFIG_NSM @CONFIG_NSM@
 
