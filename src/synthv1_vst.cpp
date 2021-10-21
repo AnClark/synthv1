@@ -195,6 +195,8 @@ void synthv1_vst::process(int nframes, const std::vector<synthv1_midi_event_t> &
 
     for (event = midi_in.begin(); event != midi_in.end(); ++event)
     {
+#if 0 // NOTICE: Bypass this section to prevent noisy stitiches \
+      //         when playing sounds with sustain pedal activated
         if (event->offset_frames > ndelta)
         {
             const uint32_t nread = event->offset_frames - ndelta;
@@ -209,6 +211,7 @@ void synthv1_vst::process(int nframes, const std::vector<synthv1_midi_event_t> &
             }
             ndelta = event->offset_frames;
         }
+#endif
         synthv1::process_midi(event->buffer, event->length);
     }
 
