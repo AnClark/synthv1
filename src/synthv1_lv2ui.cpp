@@ -163,7 +163,7 @@ static const LV2UI_Show_Interface synthv1_lv2ui_show_interface =
 int synthv1_lv2ui_resize ( LV2UI_Handle ui, int width, int height )
 {
 	synthv1widget_lv2 *pWidget = static_cast<synthv1widget_lv2 *> (ui);
-	if (pWidget) {
+	if (pWidget && width > pWidget->sizeHint().width() && height > pWidget->sizeHint().height()) {
 		pWidget->resize(width, height);
 		return 0;
 	} else {
