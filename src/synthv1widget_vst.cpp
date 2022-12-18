@@ -87,6 +87,9 @@ synthv1widget_vst::synthv1widget_vst(synthv1_vst *pSynth, AEffect *pEffect)
 	// Initialize (user) interface stuff...
 	m_pSynthUi = new synthv1_vstui(pSynth, pEffect);
 
+	// Set window position to the right place.
+	this->move(0, 0);
+
 	// Initialise preset stuff...
 	clearPreset();
 
