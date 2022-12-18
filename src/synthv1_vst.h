@@ -115,7 +115,6 @@ struct Plugin
     {
         audioMaster = master;
 
-        synthv1_vst::qapp_instantiate();
         synthesizer = new synthv1_vst;
 
         midiBuffer = (unsigned char *)malloc(4096);
@@ -123,7 +122,6 @@ struct Plugin
 
     ~Plugin()
     {
-        synthv1_vst::qapp_cleanup();
         delete synthesizer;
 
         free(midiBuffer);

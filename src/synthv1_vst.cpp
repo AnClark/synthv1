@@ -472,13 +472,19 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
     switch (opcode)
     {
     case effOpen:
-        return 0;
+    {
+        synthv1_vst::qapp_instantiate();
+        return 0;        
+    }
+
 
     case effClose:
     {
         delete plugin;
         memset(effect, 0, sizeof(AEffect));
         free(effect);
+
+        synthv1_vst::qapp_cleanup();
         return 0;
     }
 
