@@ -139,6 +139,32 @@ if (CONFIG_JACK)
   )
 endif ()
 
+if (CONFIG_DPF)
+  set (DPF_PLUGIN_TYPES)
+  if (CONFIG_DPF_VST2)
+    list (APPEND DPF_PLUGIN_TYPES "vst2")
+  endif ()
+  if (CONFIG_DPF_VST3)
+    list (APPEND DPF_PLUGIN_TYPES "vst3")
+  endif ()
+  if (CONFIG_DPF_CLAP)
+    list (APPEND DPF_PLUGIN_TYPES "clap")
+  endif ()
+  if (CONFIG_DPF_LV2)
+    list (APPEND DPF_PLUGIN_TYPES "lv2")
+  endif ()
+
+  dpf_add_plugin (${PROJECT_NAME}_dpf
+    TARGETS ${DPF_PLUGIN_TYPES}
+    #UI_TYPE external
+    FILES_DSP
+      synthv1_dpf.cpp
+    #FILES_UI
+    #  synthv1_dpfui.cpp
+    #  synthv1widget_dpf.cpp
+  )
+endif ()
+
 set_target_properties (${PROJECT_NAME}    PROPERTIES CXX_STANDARD 17)
 set_target_properties (${PROJECT_NAME}_ui PROPERTIES CXX_STANDARD 17)
 
@@ -248,4 +274,12 @@ if (CONFIG_JACK)
     install (FILES man1/${PROJECT_NAME}.fr.1
       DESTINATION ${CMAKE_INSTALL_MANDIR}/fr/man1 RENAME ${PROJECT_NAME}.1)
   endif ()
+endif ()
+
+if (CONFIG_DPF)
+  set_target_properties (${PROJECT_NAME}_dpf PROPERTIES CXX_STANDARD 17)
+  target_link_libraries (${PROJECT_NAME}_dpf PRIVATE ${PROJECT_NAME}_ui)
+
+  target_include_directories (${PROJECT_NAME}_dpf-dsp PRIVATE ${Qt6Widgets_INCLUDE_DIRS})
+  #target_include_directories(${PROJECT_NAME}_dpf-ui PRIVATE ${Qt6Widgets_INCLUDE_DIRS})
 endif ()
