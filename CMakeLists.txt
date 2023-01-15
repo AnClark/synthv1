@@ -98,6 +98,18 @@ option (CONFIG_LV2_PATCH "Enable LV2 plug-in Patch support (default=yes)" 1)
 
 option (CONFIG_LV2_PORT_EVENT "Enable LV2 plug-in Port-event support (default=yes)" 1)
 
+# Enable DPF (DISTRHO Plugin Framework) plugin build.
+set (DPF_ROOT_DIR "${PROJECT_SOURCE_DIR}/3rdparty/dpf" CACHE INTERNAL "Root directory of the DISTRHO Plugin Framework.")
+
+option (CONFIG_DPF "Enable DPF (DISTRHO Plugin Framework) plug-in build (default=yes)" 1)
+
+option (CONFIG_DPF_VST2 "Enable VST plug-in support (via DPF) (default=yes)" 1)
+
+option (CONFIG_DPF_VST3 "Enable VST3 plug-in support (via DPF) (default=yes)" 1)
+
+option (CONFIG_DPF_LV2 "Enable LV2 plug-in support (via DPF) (default=no)" 0)
+
+option (CONFIG_DPF_CLAP "Enable CLAP plug-in support (via DPF) (default=yes)" 1)
 
 # Enable liblo availability.
 option (CONFIG_LIBLO "Enable liblo interface (default=yes)" 1)
@@ -297,6 +309,13 @@ if (CONFIG_LV2_PATCH)
 endif ()
 
 
+# Check for DPF support
+# TODO: Ignore DPF if directory does not exist
+if (CONFIG_DPF)
+  add_subdirectory ("${PROJECT_SOURCE_DIR}/3rdparty/dpf")
+endif ()
+
+
 add_subdirectory (src)
 
 
@@ -329,6 +348,11 @@ show_option ("  LV2 plug-in UI Resize interface support  . . . . ." CONFIG_LV2_U
 show_option ("  LV2 plug-in Programs support . . . . . . . . . . ." CONFIG_LV2_PROGRAMS)
 show_option ("  LV2 plug-in Patch support  . . . . . . . . . . . ." CONFIG_LV2_PATCH)
 show_option ("  LV2 plug-in Port-event support . . . . . . . . . ." CONFIG_LV2_PORT_EVENT)
+show_option ("  DPF (DISTRHO Plugin Framework) support . . . . . ." CONFIG_DPF)
+show_option ("  VST plug-in build (via DPF)  . . . . . . . . . . ." CONFIG_DPF_VST2)
+show_option ("  VST3 plug-in build (via DPF) . . . . . . . . . . ." CONFIG_DPF_VST3)
+show_option ("  LV2 plug-in build (via DPF)  . . . . . . . . . . ." CONFIG_DPF_LV2)
+show_option ("  CLAP plug-in build (via DPF) . . . . . . . . . . ." CONFIG_DPF_CLAP)
 show_option ("  OSC service support (liblo)  . . . . . . . . . . ." CONFIG_LIBLO)
 show_option ("  Non Session Management (NSM) support . . . . . . ." CONFIG_NSM)
 message   ("\n  Install prefix . . . . . . . . . . . . . . . . . .: ${CONFIG_PREFIX}\n")
