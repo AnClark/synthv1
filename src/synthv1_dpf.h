@@ -113,6 +113,8 @@ public:
 	SynthV1Plugin();
 	~SynthV1Plugin();
 
+	synthv1_dpf *getSynthesizer();
+
 protected:
 	// ----------------------------------------------------------------------------------------------------------------
 	// Information

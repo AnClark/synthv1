@@ -1,6 +1,7 @@
 #include "synthv1widget_dpf.h"
 
 #include "synthv1_dpf.h"
+#include "synthv1_dpfui.h"
 
 #include <QApplication>
 #include <QFileInfo>
@@ -31,7 +32,7 @@
 // synthv1widget_lv2 - impl.
 //
 
-synthv1widget_dpf::synthv1widget_dpf ( synthv1_dpf *pSynth )
+synthv1widget_dpf::synthv1widget_dpf ( synthv1_dpf *pSynth, DISTRHO::SynthV1PluginUI *pPluginUiInterface )
 	: synthv1widget()
 {
 	// Check whether under a dedicated application instance...
@@ -58,7 +59,7 @@ synthv1widget_dpf::synthv1widget_dpf ( synthv1_dpf *pSynth )
 	}
 
 	// Initialize (user) interface stuff...
-	m_pSynthUi = new synthv1_dpfui(pSynth);
+	m_pSynthUi = new synthv1_dpfui(pSynth, pPluginUiInterface);
 
 	// Initialise preset stuff...
 	clearPreset();
@@ -91,9 +92,18 @@ void synthv1widget_dpf::closeEvent ( QCloseEvent *pCloseEvent )
 	synthv1widget::closeEvent(pCloseEvent);
 }
 
-// Param method.
+// Param method: Host -> UI.
+// Render host's parameter values on UI. This is called by DPF UI's paramChanged() method.
+void synthv1widget_dpf::setUIParamValue(synthv1::ParamIndex paramIndex, float value)
+{
+	this->setParamValue(paramIndex, value);
+}
+
+// Param method: UI -> Host.
+// This method sets host's param values from UI side.
 void synthv1widget_dpf::updateParam (
 	synthv1::ParamIndex index, float fValue ) const
 {
+	m_pSynthUi->setParamValue(index, fValue);
 	m_pSynthUi->write_function(index, fValue);
 }
