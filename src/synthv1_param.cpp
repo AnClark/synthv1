@@ -263,10 +263,29 @@ float synthv1_param::paramScale ( synthv1::ParamIndex index, float fValue )
 		return fScale;
 }
 
+float synthv1_param::paramMinValue(synthv1::ParamIndex index)
+{
+	return synthv1_params[index].min;
+}
+
+float synthv1_param::paramMaxValue(synthv1::ParamIndex index)
+{
+	return synthv1_params[index].max;
+}
 
 bool synthv1_param::paramFloat ( synthv1::ParamIndex index )
 {
 	return (synthv1_params[index].type == PARAM_FLOAT);
+}
+
+bool synthv1_param::paramBool ( synthv1::ParamIndex index )
+{
+	return (synthv1_params[index].type == PARAM_BOOL);
+}
+
+bool synthv1_param::paramInt ( synthv1::ParamIndex index )
+{
+	return (synthv1_params[index].type == PARAM_INT);
 }
 
 

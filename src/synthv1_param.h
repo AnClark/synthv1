@@ -57,7 +57,11 @@ namespace synthv1_param
 	float paramSafeValue(synthv1::ParamIndex index, float fValue);
 	float paramValue(synthv1::ParamIndex index, float fScale);
 	float paramScale(synthv1::ParamIndex index, float fValue);
+	float paramMinValue(synthv1::ParamIndex index);
+	float paramMaxValue(synthv1::ParamIndex index);
 	bool paramFloat(synthv1::ParamIndex index);
+	bool paramBool(synthv1::ParamIndex index);
+	bool paramInt(synthv1::ParamIndex index);
 
 	// Load/save and convert canonical/absolute filename helpers.
 	QString loadFilename(const QString& sFilename);
