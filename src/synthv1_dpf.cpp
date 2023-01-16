@@ -281,6 +281,12 @@ SynthV1Plugin::~SynthV1Plugin()
 }
 
 
+synthv1_dpf* SynthV1Plugin::getSynthesizer()
+{
+	return &(*fSynthesizer);	// Unique pointer -> standard pointer
+}
+
+
 void SynthV1Plugin::initParameter(uint32_t index, Parameter& parameter)
 {
 	synthv1::ParamIndex currentParam = (synthv1::ParamIndex)index;
