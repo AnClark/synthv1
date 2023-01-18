@@ -23,6 +23,7 @@
 #define __synthv1_dpf_h
 
 #include "synthv1.h"
+#include "config.h"
 
 #include "DistrhoPlugin.hpp"
 
@@ -145,7 +146,7 @@ protected:
 	*/
 	uint32_t getVersion() const noexcept override
 	{
-		return d_version(0, 1, 0);
+		return d_version(CONFIG_VERSION_MAJOR, CONFIG_VERSION_MINOR, CONFIG_VERSION_PATCH);
 	}
 
    /**

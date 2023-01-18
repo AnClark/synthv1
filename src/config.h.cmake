@@ -18,6 +18,9 @@
 
 /* Define to the version of this package. */
 #cmakedefine CONFIG_VERSION "@CONFIG_VERSION@"
+#define CONFIG_VERSION_MAJOR @CONFIG_VERSION_MAJOR@
+#define CONFIG_VERSION_MINOR @CONFIG_VERSION_MINOR@
+#define CONFIG_VERSION_PATCH @CONFIG_VERSION_PATCH@
 
 /* Define to the build version of this package. */
 #cmakedefine CONFIG_BUILD_VERSION "@CONFIG_BUILD_VERSION@"
