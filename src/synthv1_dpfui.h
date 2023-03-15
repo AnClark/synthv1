@@ -26,6 +26,8 @@
 
 #include "DistrhoUI.hpp"
 
+#include <memory>
+
 // Forward decls.
 class synthv1_dpf;
 
@@ -36,7 +38,7 @@ START_NAMESPACE_DISTRHO
 
 class SynthV1PluginUI : public UI {
 
-	synthv1widget_dpf *fWidget;
+	std::unique_ptr<synthv1widget_dpf> fWidget;
 	WId fWinId;
 	WId fParent;
 

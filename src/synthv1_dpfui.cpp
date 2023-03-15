@@ -42,7 +42,7 @@ SynthV1PluginUI::SynthV1PluginUI()
 	// This is discouraged by DPF, but synthv1 do need this due to its designation.
 	SynthV1Plugin *fDspInstance = (SynthV1Plugin*) UI::getPluginInstancePointer();
 
-	fWidget = new synthv1widget_dpf(fDspInstance->getSynthesizer(), this);
+	fWidget = std::make_unique<synthv1widget_dpf>(fDspInstance->getSynthesizer(), this);
 
 	// Get the recommended UI size, then apply it.
 	const QSize& hint = fWidget->sizeHint();
@@ -66,11 +66,7 @@ SynthV1PluginUI::SynthV1PluginUI()
 
 SynthV1PluginUI::~SynthV1PluginUI()
 {
-	if (fWidget)
-	{
-		delete fWidget;
-		fWidget = nullptr;
-	}
+	// Unique pointer will be automatically cleaned up.
 }
 
 /* --------------------------------------------------------------------------------------------------------
