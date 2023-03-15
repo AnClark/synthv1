@@ -207,6 +207,11 @@ void synthv1_dpf::qapp_instantiate (void)
 	#else
 		::setenv("QT_NO_GLIB", "1", 1); // Avoid glib event-loop...
 	#endif
+	#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+		// Disable Hi-DPI scaling on Windows
+		// TODO: This is a temporary workaround. That should be a better way to handle Hi-DPI stuff.
+		::_putenv_s("QT_ENABLE_HIGHDPI_SCALING", "0");
+	#endif
 		g_qapp_instance = new QApplication(s_argc, (char **) s_argv);
 	}
 
