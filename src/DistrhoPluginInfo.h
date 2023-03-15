@@ -41,6 +41,11 @@
 // because synthv1 UI accesses synth engine, see synthv1widget.cpp.
 #define DISTRHO_PLUGIN_WANT_DIRECT_ACCESS 1
 
+// Specify a default UI size.
+// This can avoid temporary UI creations by DPF (in order to know the actual UI size)
+#define DISTRHO_UI_DEFAULT_WIDTH 1100
+#define DISTRHO_UI_DEFAULT_HEIGHT 510
+
 #endif // DISTRHO_PLUGIN_INFO_H_INCLUDED
 
 // end of DistrhoPluginInfo.h

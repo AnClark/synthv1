@@ -29,26 +29,10 @@
 // SynthV1PluginUI - DPF Plugin UI interface.
 //
 
-// --------------------------------
-// NOTICE: About UI sizes
-//
-// DPF UI size is dynamic. It can be changed on runtime via setWidth() and setHeight().
-// But different plug-in formats has different behaviors:
-//
-// * VST2/VST3: Size can be changed freely. Default UI size is not fundamental.
-// * CLAP:		Must assume a default UI size, otherwise setWidth() and setHeight()
-//				will not work.
-//
-// Since CLAP has limited size management feature, I apply a base UI size below, in the
-// constructor of UI().
-//
-// Also please notice that the config macro DISTRHO_UI_DEFAULT_(WIDTH|HEIGHT) does not work.
-// Assigning in UI() constructor instead.
-
 START_NAMESPACE_DISTRHO
 
 SynthV1PluginUI::SynthV1PluginUI()
-	: UI(BASE_UI_HEIGHT, BASE_UI_WIDTH), fWidget(nullptr)
+	: UI(), fWidget(nullptr)
 {
 	// Print out DPF standalone mode state.
 	const bool standalone = isStandalone();

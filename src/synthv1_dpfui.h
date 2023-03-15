@@ -29,10 +29,6 @@
 // Forward decls.
 class synthv1_dpf;
 
-// Constants.
-static const int BASE_UI_WIDTH = 1100;
-static const int BASE_UI_HEIGHT = 510;
-
 // -----------------------------------------------------------------------------------------------------------
 // SynthV1PluginUI - DPF Plugin UI interface.
 
